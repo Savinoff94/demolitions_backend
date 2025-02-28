@@ -12,6 +12,12 @@
     "prettier": "npx prettier . --write",
     "prepare": "husky"
   },
+  "lint-staged": {
+    "src/**/*.{js,ts,jsx,tsx}": [
+      "npx eslint --fix",
+      "npx prettier --write"
+    ]
+  },
   "type": "module",
   "keywords": [],
   "author": "",
