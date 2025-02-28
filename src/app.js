@@ -1,20 +1,20 @@
-import express from 'express';
-import dotenv from 'dotenv';
-import routes from './routes/index.js';
+import express from 'express'
+import dotenv from 'dotenv'
+import routes from './routes/index.js'
 
-dotenv.config();
+dotenv.config()
 
-const app = express();
+const app = express()
 
 // Middleware
-app.use(express.json());
+app.use(express.json())
 
 // Routes
-app.use('/', routes);
+app.use('/', routes)
 // Global Error Handler
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ message: 'Internal Server Error' });
-});
+app.use((err, req, res) => {
+    console.error(err.stack)
+    res.status(500).json({ message: 'Internal Server Error' })
+})
 
-export default app;
+export default app
