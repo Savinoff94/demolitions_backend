@@ -1,2 +1,4 @@
-npm run lint:fix
-npm run prettier
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+npx lint-staged
