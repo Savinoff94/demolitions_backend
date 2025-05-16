@@ -12,22 +12,41 @@ router.get('/run', async (req, res) => {
     const buildingNumber = '31'
 
     const browser = await puppeteer.launch({ headless: false })
-    const page = await this.browser.newPage()
+    const page = await browser.newPage()
 
     const crawler = new Crawler(browser, page)
 
-    await crawler.initialize()
     await crawler.goToWebsite(
-        'https://handasa.ramat-gan.muni.il/rishui-tama-38/iturbakashot/'
+        'https://handasa.ramat-gan.muni.il/iturbakashot/?search_radio=C_RequestByAddressGRP'
     )
     try {
         await crawler.moveToAddressInfo(street, buildingNumber)
-    } catch (error) {
-        console.log(error)
-        return res.status(400).json({
-            error: 'Bad Request: wrong data',
-            message: 'Please check an address',
+
+        await page.waitForSelector('table', {
+            visible: true,
+            timeout: 10000,
         })
+
+        const linksElementsToDocs = await crawler.getLinksElementsToDocs()
+        if (linksElementsToDocs.length === 0) {
+            throw new Error('no_data')
+        }
+
+        const data = []
+        for (const numberLink of linksElementsToDocs) {
+            await crawler.goToNumberLink(numberLink)
+            const pageTablesData = await crawler.parseTables()
+            data.push(pageTablesData)
+            await crawler.goBack()
+        }
+        console.log('dataLenght', data.length)
+    } catch (error) {
+        await browser.close()
+        return res.status(400).json({
+            message: error.message,
+        })
+    } finally {
+        await browser.close()
     }
 
     res.json({ message: 'done' })
